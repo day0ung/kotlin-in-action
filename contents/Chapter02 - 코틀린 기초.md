@@ -44,10 +44,10 @@ fun max(a: Int, b: Int) = if(a > b) a else b -> 반환 타입 생략
 
 코틀린에서는 식이 본문인 함수가 자주 쓰인다.
 > 💡 위 코드 에서 반환타입을 생략할수 있는 이유는?  
-코틀린은 정적 타입 지정 언어이므로 컴파일 시점에 모든 식의 타입을 지정 해야하지 않나?  
+> 코틀린은 정적 타입 지정 언어이므로 컴파일 시점에 모든 식의 타입을 지정 해야하지 않나?  
 실제로 모든 식에는 타입이 있으며, 모든 함수는 반환타입이 정해져야 한다.  
 > 
-> 💡 하지만 식이 본문인 함수의 경우 굳이 사용자가 반환 타입을 적지 않아도 컴파일러가 함수 본문 식을 분석해서 결과 타입을 함수 반환 타입으로 정해준다.  
+> 하지만 식이 본문인 함수의 경우 굳이 사용자가 반환 타입을 적지 않아도 컴파일러가 함수 본문 식을 분석해서 결과 타입을 함수 반환 타입으로 정해준다.  
 컴파일러가 타입을 분석해 프로그래머 대신 프로그램 구성요소의 타입을 정해주는 기능으로 **타입 추론**이라 부른다.  
 
 유의할 점: 
@@ -88,8 +88,54 @@ val 참조 자체는 불변일 지라도 그 참조가 가리키는 객체의 �
 val languages = arrayListOf("java") //불변 참조를 선언
 languages.add("kotlin") //참조가 가리키는 객체 내부 변경
 ```
+
+### 문자열 템플릿
+아래 코드는 name이라는 변수를 선어ㄴ하고 , 그다음 줄에 있는 문자열 리터럴 안에서 변수를 사용했다.
+```kotlin
+fun main (args: Array<String>){
+    val name = if (args.size >0) args[0] else "Kotlin"
+    println("Hello, $name!")
+    
+    //복잡한 식도 변수로 사용할 수 있다.
+    println("Hello, ${if (args.size >0) args[0] else "Kotlin"}")
+}
+```
+* ${name} 처럼 중괄호로 변수명을 감싸는 습관을 들이면 더 좋다.
+
 ## 클래스와 프로퍼티
+```Java
+/* Java */
+public class Person {
+    private final String name;
+    
+    public Person(String name){
+        this.name = name;
+    }
+    
+    public String getName(){
+        return name;
+    }
+}
+
+/* Kotlin*/
+class Person(val name: String)
+
+```
 ### 프로퍼티
+클래스라는 개념의 목적은 데이터를 캡슐화 하고, 캡슐화 한 데이터를 다루는 코드를 한 주체 아래 가두는 것이다.  
+자바에서는 데이터를 필드에 저장하며, 필드의 가시성은 private하다.  
+클래스는 자신을 사용하는 클라이언트가 그 데이터에 접근하는 통로로 쓸 수 있는 **접근자 메서드**를 제공한다.  
+
+자바에서는 필드와 접근자를 한데 묶어 **프로퍼티**<sup>property</sup>라 부르며, 이개념을 활용한 프레임워크가 많다.  
+코틀린은 프로퍼티를 언어 기본 기능으로 제공하며, 코틀린 프로퍼티는 자바의 필드와 접근자 메서드를 완전히 대신한다.  
+
+```kotlin
+class Person {
+    val name: String, //읽기 전용 프로퍼티로 private, getter를 생성
+    var isMarried: Boolean // 쓸수 있는 프로퍼티로, private, getter, setter 생성
+}
+```
+
 ### 커스텀 접근자
 ### 코틀린 소스구조 : 디렉터리와 패키지
 
