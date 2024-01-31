@@ -137,10 +137,110 @@ class Person {
 ```
 
 ### 커스텀 접근자
+코틀린은 기본적으로 프로퍼티에 대한 접근자를 자동으로 생성하지만, 필요에 따라 이를 커스터마이징할 수 있다.  
+커스텀 접근자를 정의할 때에는 get() 및 set() 키워드를 사용한다.
+```kotlin
+class Rectangle(var width: Int, var height: Int) {
+    var area: Int
+        get() = width * height // 커스텀 getter
+        set(value) {
+            // 커스텀 setter
+            if (value >= 0) {
+                width = value
+                height = value
+            }
+        }
+}
+```
 ### 코틀린 소스구조 : 디렉터리와 패키지
 
 ## 선택 표현과 처리: enum과 when
-### enum 클래스 정의
+when은 자바의 switch를 대치하되 훨씬 더 강려가며, 앞으로 더 자주 사용할 프로그래밍요소이다.
+
+```kotlin
+enum class Color {
+    RED, ORANGE, GREEN
+}
+```
+
+코틀린에서 enum은 소프트 키워드라 부른다. enum은 class 앞에 있을때는 특별한 의미를 지니지만 다른곳에서는 이름에 사용할수 있다.  
+반면 class는 키워드다. 따라서 class라는 이름을 사용할수 없으므로 클래스를 표현하는 변수를 저의할때는 clazz ..같은 이름을 사용해야한다.
+소프트 키워드란? 특별한 문맥에서민 키워드로 간주되고, 그런 문맥이 아닌경우 일반적인 식별자로 쓸 수 있다.
+
+```kotlin
+//프로퍼티와 메서드가 있는 enum클래스 선언하기
+enum class Color (
+    val r: Int, val g: Int, val b: Int <- 상수의 프로퍼티를 정의
+) {
+    RED(255,0,0), GREEN(0,255,0), <-  각 상수를 생성할때 그에 대한 프로퍼티 값 지정
+    BLUE(0,0,255);  <- enum 클래스안에 메서드를 정의하는경우 반드시 (;)를 넣어야한다. 
+    
+    fun rgb() = (r * 256 +g) * 256 +b 
+}
+```
+
+**when 표현식**은 주어진 조건에 따라 다양한 동작을 선택합니다. 각 조건은 화살표(->)를 사용하여 해당 조건이 일치할 때 수행할 동작을 정의한다.
+```kotlin
+fun main() {
+    val x = 5
+
+    when (x) {
+        1 -> println("x is 1")
+        2 -> println("x is 2")
+        3, 4 -> println("x is either 3 or 4")
+        in 5..10 -> println("x is between 5 and 10")
+        else -> println("x is something else")
+    }
+}
+
+--> 2x is between 5 and 10
+```
+* java와 달리 break를 넣지 않아도 된다.
+* 한 분기 안에서 여러 값을 매치 패턴으로 사용할 수 있다. 그럴경우 ,로 분리한다.
+
+```kotlin
+// 2.14 enum 상수 값을 import enum 클래스 수식자 없이 enum 사용하기
+fun getWarmth(color: Color) = when(color){
+    RED, ORANGE, YELLO -> "warm"
+    GREEN -> "neutral"
+    BLUE -> "cold"
+}
+
+// 2.15 when의 분기 조건에 여러 다른 객체 사용하기
+fun mix(c1: Color, c2: Color) =
+    when (setOf(c1, c2)){  //setOf : Kotlin에서 고유한 요소로 이뤄진 불변의 새로운 Set을 만드는 함수
+        setOf(RED, YELLO) -> ORANGE
+        else -> throw Exception("Dirty color")
+    }
+
+//2.16 인자가 없는 when
+fun mixOptimized(c1: Color, c2: Color) =
+    when {
+        (c1 ==RED && c2 ==YELLO) || (c1 ==YELLO && c2 == RED) -> ORANGE
+        (c1 ==BLUE && c2 ==YELLO) || (c1 ==YELLO && c2 == BLUE) -> GREEN
+        else -> throw Exception("Dirty color")
+    }
+-> when에 아무 인자도 없으려면 각 분기의 조건이 boolean 결과를 계산하는 식이여야한다.
+```
+
+**스마트캐스트** : 타입검사와 타입 캐스트를 조합    
+클래스가 구현하는 인터페이스를 지정하기 위해서 콜론(:) 뒤에 인터페이스 이름을 사용한다.
+```kotlin
+interface Expr
+class Num(val value: Int) : Expr <- value라는 프로퍼티만 존재하는 단순한 클래스로 Expr인터페이스를 구현
+class Sum(vla lef: Expr, val rightL Expr) : Expr <- Expr타입의 객체라면 어떤것이나 Sum 연산의 인자가 될수 있다.
+```
+####  변수 타입 검사: is
+is는 자바의 instanceof와 비슷하다.  
+자바에서는 instanceof로 확인한 후에 명시적으로 변수타입을 캐스팅해야한다.  
+코틀린에서는 프로그래머 대신 컴파일러가 캐스팅을 해준다.  
+> * 어떤 변수가 원하는타입인지 is로 검사
+> * 변수를 원하는 타입으로 캐스팅  
+
+* ![](./img/img4.png)  
+* eval 함수에서 e의 타입이 Num인지 검사
+* 컴파일러는 e의 타입을 Num으로 해석
+* Num의 프로퍼티인 value를 명시적 캐스팅 없이 e.value로 사용할 수 있다.
 
 ## 대상을 이터레이션: while과 루프
 ## 코틀린의 예외처리
